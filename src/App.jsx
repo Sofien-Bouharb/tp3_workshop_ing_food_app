@@ -1,121 +1,154 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import Navbar from './components/Navbar'
+import Sidebar from './components/Sidebar'
+import CategoryFilter from './components/CategoryFilter'
+import ProductList from './components/ProductList'
 import './App.css'
 
+const initialProducts = [
+  {
+    id: 1,
+    name: 'Classic Burger',
+    category: 'Burgers',
+    description: 'Un burger juteux avec du fromage, salade et sauce spéciale.',
+    price: 8.99,
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 2,
+    name: 'BBQ Burger',
+    category: 'Burgers',
+    description: 'Un burger savoureux avec sauce barbecue et fromage fondu.',
+    price: 9.99,
+    image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 3,
+    name: 'Margherita Pizza',
+    category: 'Pizza',
+    description: 'Sauce tomate, mozzarella et basilic frais.',
+    price: 10.99,
+    image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 4,
+    name: 'Pasta Alfredo',
+    category: 'Pasta',
+    description: 'Pâtes crémeuses avec parmesan et herbes.',
+    price: 9.99,
+    image: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281293?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 5,
+    name: 'Chocolate Cake',
+    category: 'Desserts',
+    description: 'Un gâteau au chocolat fondant et délicieux.',
+    price: 5.99,
+    image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 6,
+    name: 'Fresh Orange Juice',
+    category: 'Drinks',
+    description: "Un jus d'orange frais et rafraîchissant.",
+    price: 3.99,
+    image: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=600&q=80',
+  },
+]
+
+const categories = ['All', 'Burgers', 'Pizza', 'Pasta', 'Desserts', 'Drinks']
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [searchText, setSearchText] = useState('')
+  const [favoriteIds, setFavoriteIds] = useState([])
+  const [darkMode, setDarkMode] = useState(false)
+
+  function handleCategorySelect(category) {
+    setSelectedCategory(category)
+  }
+
+  function handleSearchChange(event) {
+    setSearchText(event.target.value)
+  }
+
+  function handleToggleFavorite(productId) {
+    if (favoriteIds.includes(productId)) {
+      setFavoriteIds(favoriteIds.filter(function (id) {
+        return id !== productId
+      }))
+    } else {
+      setFavoriteIds([...favoriteIds, productId])
+    }
+  }
+
+  function handleToggleTheme() {
+    setDarkMode(!darkMode)
+  }
+
+  const filteredProducts = initialProducts.filter(function (product) {
+    const matchesCategory =
+      selectedCategory === 'All' || product.category === selectedCategory
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(searchText.toLowerCase())
+    return matchesCategory && matchesSearch
+  })
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
+      <Sidebar
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={handleCategorySelect}
+      />
 
-      <div className="ticks"></div>
+      <main className="main-content">
+        <Navbar
+          searchText={searchText}
+          onSearchChange={handleSearchChange}
+          darkMode={darkMode}
+          onToggleTheme={handleToggleTheme}
+        />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <section className="promo-banner">
+          <div className="banner-content">
+            <h1 className="banner-title">
+              Des plats délicieux à portée de main !
+            </h1>
+            <p className="banner-subtitle">
+              Commandez vos repas préférés et faites-vous livrer en un rien de temps.
+            </p>
+            <button type="button" className="btn-order">
+              Commander maintenant →
+            </button>
+          </div>
+          <div className="banner-image-wrapper">
+            <img
+              src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80"
+              alt="Delicious Burger and Fries"
+              className="banner-image"
+            />
+          </div>
+        </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        <section className="products-section">
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={handleCategorySelect}
+          />
+
+          <h2 className="section-title">Nos produits</h2>
+
+          <ProductList
+            products={filteredProducts}
+            favoriteIds={favoriteIds}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        </section>
+      </main>
+    </div>
   )
 }
 
